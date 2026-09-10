@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capacitación Interactiva AndCo - SAC</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 1050px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  h1 { color: #003366; text-align: center; margin-bottom: 5px; }
+  p.subtitle { text-align: center; color: #666; font-size: 0.95em; margin-bottom: 25px; }
+  
+  .banner-req {
+    background: #fff3cd;
+    border-left: 5px solid #ffc107;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+  }
+
+  .banner-notion {
+    background: #eef2f5;
+    border-left: 5px solid #005599;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+    font-size: 0.9em;
+  }
+  .banner-notion ul {
+    margin: 8px 0 0 0;
+    padding-left: 20px;
+  }
+  .banner-notion li {
+    margin-bottom: 8px;
+  }
+  .banner-notion li:last-child {
+    margin-bottom: 0;
+  }
+  .banner-notion a { color: #005599; font-weight: bold; text-decoration: none; }
+  .banner-notion a:hover { text-decoration: underline; }
+
+  /* Tablero Interactivo Principal */
+  .interactive-board {
+    position: relative;
+    background: #e6f0fa;
+    border: 2px dashed #005599;
+    border-radius: 10px;
+    padding: 25px 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .hotspot-card {
+    background: #ffffff;
+    border: 2px solid #005599;
+    border-radius: 8px;
+    padding: 15px;
+    width: 150px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .hotspot-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,85,153,0.2);
+    background: #005599;
+    color: #ffffff;
+  }
+  .hotspot-card-special { border-color: #6a1b9a; }
+  .hotspot-card-special:hover { background: #6a1b9a; }
+  
+  .hotspot-card-links { border-color: #00838f; }
+  .hotspot-card-links:hover { background: #00838f; }
+
+  .hotspot-card-glossary { border-color: #e65100; }
+  .hotspot-card-glossary:hover { background: #e65100; color: #ffffff; }
+
+  /* TARJETA DESTACADA ANDCO */
+  .hotspot-card-andco {
+    background: linear-gradient(145deg, #111827, #1a2332);
+    color: #ffffff;
+    border: 3px solid #005599;
+    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.3);
+  }
+  .hotspot-card-andco:hover {
+    background: linear-gradient(145deg, #0b0f19, #111827);
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(17, 24, 39, 0.5);
+  }
+
+  /* TARJETA DESTACADA SIMULADOR */
+  .hotspot-card-sim {
+    background: linear-gradient(145deg, #0052cc, #003d99);
+    color: #ffffff;
+    border: 3px solid #002b80;
+    box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+  }
+  .hotspot-card-sim:hover {
+    background: linear-gradient(145deg, #003d99, #002b80);
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(0, 82, 204, 0.5);
+  }
+
+  .andco-brand-title {
+    font-size: 1.8em;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 2px;
+    color: #ffffff;
+  }
+  .andco-subbrand {
+    font-size: 0.75em;
+    color: #9ca3af;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .hotspot-icon { font-size: 2em; margin-bottom: 8px; }
+
+  /* Modales */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.65);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 850px;
+    width: 90%;
+    max-height: 88vh;
+    overflow-y: auto;
+    position: relative;
+    animation: fadeIn 0.25s ease-in-out;
+  }
+  .modal-content-large { max-width: 980px; }
+  
+  .close-btn {
+    position: absolute;
+    top: 10px; right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+  }
+  .close-btn:hover { color: #000; }
+
+  /* Pestañas */
+  .tab-container {
+    display: flex;
+    border-bottom: 2px solid #005599;
+    margin-bottom: 15px;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: #eef2f5;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #005599;
+    border-radius: 5px 5px 0 0;
+  }
+  .tab-btn.active {
+    background: #005599;
+    color: #fff;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .tag-do { background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+  .tag-dont { background: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+  .code-box { background: #f4f4f4; border-left: 4px solid #005599; padding: 12px; font-size: 0.9em; margin: 10px 0; border-radius: 4px; }
+  .dark-card { background: #2d2d2d; color: #ffffff; padding: 15px; border-radius: 8px; margin: 10px 0; }
+  .dark-card ul { margin: 5px 0; padding-left: 20px; }
+
+  /* Estilos para el nuevo aviso de AndCo en Validación de Seguridad */
+  .andco-validation-notice {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #005599;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin: 12px 0 20px 0;
+    font-size: 0.9em;
+    color: #334155;
+    line-height: 1.5;
+  }
+  .andco-validation-notice ul {
+    margin: 8px 0 0 0;
+    padding-left: 20px;
+  }
+  .andco-validation-notice li {
+    margin-bottom: 4px;
+  }
+
+  /* Tablas de Enlaces y Glosario */
+  .links-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.9em;
+  }
+  .links-table th, .links-table td {
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+  }
+  .links-table th {
+    background-color: #00838f;
+    color: white;
+  }
+  .links-table tr:nth-child(even) { background-color: #f9f9f9; }
+  .links-table a {
+    color: #00838f;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .links-table a:hover { text-decoration: underline; }
+
+  /* TARJETAS GLOSARIO */
+  .glossary-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid #e65100;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .glossary-title {
+    font-weight: bold;
+    color: #e65100;
+    font-size: 1.05em;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .glossary-desc {
+    font-size: 0.9em;
+    color: #444;
+    line-height: 1.4;
+  }
+  .glossary-desc ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+  }
+
+  /* ESTILOS DEL SIMULADOR ANDCO */
+  .andco-simulator-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    flex-wrap: wrap;
+  }
+  .phone-frame {
+    width: 270px;
+    height: 540px;
+    background: #111;
+    border-radius: 36px;
+    padding: 12px;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+    position: relative;
+    border: 4px solid #333;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-notch {
+    width: 100px;
+    height: 18px;
+    background: #111;
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  .camera-lens { width: 8px; height: 8px; background: #222; border-radius: 50%; }
+  .speaker-grill { width: 35px; height: 3px; background: #222; border-radius: 2px; }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-radius: 26px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .phone-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.2s ease-in-out;
+  }
+  .phone-home-indicator {
+    width: 90px;
+    height: 4px;
+    background: #ccc;
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+  }
+  .simulator-controls {
+    flex: 1;
+    min-width: 280px;
+    max-width: 420px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  .sim-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  .sim-title { font-weight: bold; font-size: 1.1em; color: #0052cc; }
+  .sim-badge { background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
+  .sim-description {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid #0052cc;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .sim-description strong { display: block; color: #1e293b; margin-bottom: 4px; }
+  .sim-description p { margin: 0; font-size: 0.88em; color: #64748b; line-height: 1.4; }
+  .sim-btn-group { display: flex; gap: 10px; margin-top: 15px; }
+  .sim-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .sim-btn.primary { background: #0052cc; color: white; }
+  .sim-btn.primary:hover { background: #003d99; }
+  .sim-btn.secondary { background: #e2e8f0; color: #475569; }
+  .sim-btn.secondary:hover { background: #cbd5e1; }
+  .sim-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .sim-dropdown-container { margin-bottom: 15px; }
+  .sim-dropdown-container label { display: block; font-size: 0.8em; font-weight: bold; color: #64748b; margin-bottom: 5px; }
+  .sim-dropdown-container select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; font-size: 0.9em; }
+
+  /* ESTILOS DE LA SECCIÓN MODAL ANDCO INFO */
+  .andco-header {
+    background: linear-gradient(135deg, #111827, #1a2332);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .andco-header h2 { margin: 0 0 5px 0; font-size: 2.2em; letter-spacing: -1px; }
+  .andco-header p.sub { color: #9ca3af; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 10px 0; }
+  .milestone-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin-top: 10px; font-size: 0.9em; color: #1e3a8a; }
+  .timeline-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+  .timeline-step { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; }
+  .timeline-badge { background: #0052cc; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85em; flex-shrink: 0; }
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
+  .feature-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 0.88em; }
+  .feature-card h4 { margin: 0 0 6px 0; color: #0052cc; font-size: 1em; }
+
+  /* ESTILOS DEL BOTÓN DESPLEGABLE Y CUADRÍCULA SEGUNDO CÓDIGO */
+  .abono-accordion-btn {
+    width: 100%;
+    background: #0284c7;
+    color: white;
+    padding: 14px 20px;
+    font-size: 1.05em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    transition: background 0.2s ease, transform 0.1s;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2);
+  }
+  .abono-accordion-btn:hover {
+    background: #0369a1;
+  }
+  .abono-accordion-btn .arrow-icon {
+    font-size: 1.2em;
+    transition: transform 0.3s ease;
+  }
+  .abono-accordion-btn.active .arrow-icon {
+    transform: rotate(180deg);
+  }
+  
+  .abono-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    background: #f8fafc;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+  }
+  .abono-accordion-content.open {
+    padding: 20px;
+  }
+
+  .andco-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .andco-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+  .andco-card .icon {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+  .andco-card h3 {
+    font-size: 14px;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    font-weight: bold;
+  }
+  .andco-card p {
+    font-size: 12.5px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* ESTILOS DEL DIAGRAMA DE FLUJO SAC */
+  .flow-diagram {
+    background: #fafbfc;
+    padding: 20px;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+  }
+  .flow-header-title {
+    text-align: center;
+    color: #0b2545;
+    margin: 0 0 2px 0;
+    font-size: 1.6em;
+    font-weight: 800;
+  }
+  .flow-header-sub {
+    text-align: center;
+    color: #666;
+    margin: 0 0 15px 0;
+    font-size: 0.9em;
+    font-weight: 600;
+  }
+  .flow-box-blue {
+    background: #0f4c81;
+    color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+  }
+  .flow-box-title {
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+  }
+  .flow-box-title span.num {
+    background: white;
+    color: #0f4c81;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8em;
+    margin-right: 10px;
+  }
+  .flow-box-content {
+    background: #ffffff;
+    color: #333;
+    padding: 12px;
+    border: 1px solid #0f4c81;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+  }
+  .channels-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    text-align: center;
+    font-size: 0.85em;
+  }
+  .channel-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #0f4c81;
+    font-weight: bold;
+  }
+  .val-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    text-align: center;
+  }
+  .val-col h5 {
+    margin: 0 0 8px 0;
+    color: #0f4c81;
+    font-size: 0.8em;
+  }
+  .val-col p {
+    margin: 8px 0 0 0;
+    font-size: 0.8em;
+    font-weight: bold;
+  }
+
+  .flow-arrow-down {
+    text-align: center;
+    color: #0f4c81;
+    font-size: 18px;
+    margin: 6px 0;
+  }
+
+  .rhombus-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    position: relative;
+  }
+  .rhombus {
+    background: #fff8e7;
+    border: 2px solid #e2a016;
+    border-radius: 8px;
+    padding: 8px 15px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85em;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .split-val {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 20px;
+  }
+  
+  .side-right-box {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .notion-side-box {
+    border: 1px dashed #666;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+    font-size: 0.78em;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .failed-card {
+    border: 1px solid #d9534f;
+    border-radius: 8px;
+    background: #fff5f5;
+    padding: 10px;
+    font-size: 0.82em;
+  }
+  .failed-card-header {
+    color: #d9534f;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .end-badge {
+    background: #d9534f;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.8em;
+    width: fit-content;
+    margin: 10px auto 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .step-green-card {
+    border: 1px solid #2e7d32;
+    border-radius: 8px;
+    background: #f1f8e9;
+    padding: 8px 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #2e7d32;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rhombus-n1 {
+    background: #fff8e7;
+    border: 2px solid #e2a016;
+    border-radius: 8px;
+    padding: 6px 12px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.82em;
+    color: #333;
+    width: fit-content;
+    margin: 8px auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .n1-branches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .n1-card {
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.8em;
+  }
+  .n1-card-left { background: #ffffff; border: 1px solid #a5d6a7; }
+  .n1-card-right { background: #ffffff; border: 1px solid #ffcc80; }
+
+  .n1-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .n1-title-left { color: #2e7d32; }
+  .n1-title-right { color: #e65100; }
+
+  .examples-box {
+    border: 1px dashed #ffb74d;
+    background: #fffde7;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin-top: 6px;
+    font-size: 0.9em;
+  }
+
+  .step-purple {
+    border: 1px solid #7e57c2;
+    background: #f3e5f5;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 0.78em;
+    margin-top: 8px;
+    color: #4a148c;
+    font-weight: bold;
+  }
+
+  .step-grey {
+    border: 1px solid #b0bec5;
+    background: #eceff1;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 0.78em;
+    margin-top: 6px;
+    color: #37474f;
+    font-weight: bold;
+  }
+
+  .badge-outcome {
+    padding: 6px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.78em;
+    margin-top: 8px;
+  }
+  .badge-resolved { background: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; }
+  .badge-escalated { background: #fff3e0; border: 1px solid #ff9800; color: #e65100; }
+
+  /* RECURSOS DE APOYO */
+  .support-resources {
+    background: #6b46c1;
+    color: white;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.82em;
+  }
+  .support-resources h4 {
+    margin: 0 0 10px 0;
+    text-align: center;
+    font-size: 0.95em;
+    letter-spacing: 0.5px;
+  }
+  .support-item {
+    background: white;
+    color: #333;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .support-item:last-child { margin-bottom: 0; }
+
+  .flow-footer-info {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78em;
+    color: #0d47a1;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Guía Interactiva SAC - AndCo</h1>
+  <p class="subtitle">Haz clic en cada módulo para desplegar los protocolos, preguntas de validación, diagrama de flujo, BackOffice, enlaces útiles y glosario técnico.</p>
+
+  <div class="banner-req">
+    ⚠️ REQUISITO OBLIGATORIO PARA EJECUTIVOS SAC:<br>
+    Para descargar la app de AndCo, es obligatorio registrarse con la cuenta Haulmer.
+  </div>
+
+  <!-- BANNER INFORMATIVO PRINCIPAL -->
+  <div class="banner-notion">
+    <strong>📌 INFORMACIÓN IMPORTANTE SAC:</strong>
+    <ul>
+      <li>Toda la información detallada del protocolo de validación se encuentra en Notion: 
+        <a href="https://app.notion.com/p/haulmer/Protocolo-de-Validaci-n-de-Seguridad-AndCo-SAC-3957ccd6b624803f81a4eac18ae8d4ac" target="_blank">Ver Protocolo de Validación en Notion 🔗</a>
+      </li>
+      <li>Cada consulta que ingrese por un comercio Beta, tiene que ser ingresada en el siguiente acceso: 
+        <a href="https://app.notion.com/p/haulmer/Apoyo-AndCo-Fase-Beta-3b47ccd6b6248027a614f90f9dd2be91" target="_blank">Apoyo AndCo Fase Beta 🔗</a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- TABLERO PRINCIPAL DE BOTONES -->
+  <div class="interactive-board">
+    <!-- RECUADRO 1: ANDCO -->
+    <div class="hotspot-card hotspot-card-andco" onclick="openModal('modal-andco')">
+      <div class="hotspot-icon">📱</div>
+      <div class="andco-brand-title">AndCo.</div>
+      <div class="andco-subbrand">Una marca Haulmer</div>
+      <p style="font-weight: bold; margin-top: 2px;">Producto & Viaje del Usuario</p>
+      <span style="font-size: 0.78em; opacity: 0.85;">Cuenta Prepago Digital & Fase Beta</span>
+    </div>
+
+    <!-- RECUADRO 2: SIMULADOR DE FLUJO ANDCO -->
+    <div class="hotspot-card hotspot-card-sim" onclick="openModal('modal-simulador')">
+      <div class="hotspot-icon">📲</div>
+      <div class="andco-brand-title" style="font-size: 1.5em;">Simulador</div>
+      <div class="andco-subbrand" style="color: #cbd5e0;">Flujo App Interactivo</div>
+      <p style="font-weight: bold; margin-top: 2px;">Prueba las Pantallas</p>
+      <span style="font-size: 0.78em; opacity: 0.85;">Recorrido paso a paso para ejecutivos</span>
+    </div>
+
+    <div class="hotspot-card" onclick="openModal('modal-flujo')">
+      <div class="hotspot-icon">📊</div>
+      <h3>Flujo SAC</h3>
+      <p>Esquema visual interactivo</p>
+    </div>
+
+    <div class="hotspot-card hotspot-card-special" onclick="openModal('modal-backoffice')">
+      <div class="hotspot-icon">🖥️</div>
+      <h3>BackOffice</h3>
+      <p>Consultas y accesos</p>
+    </div>
+
+    <div class="hotspot-card hotspot-card-links" onclick="openModal('modal-enlaces')">
+      <div class="hotspot-icon">🔗</div>
+      <h3>Enlaces</h3>
+      <p>Accesos directos y recursos</p>
+    </div>
+
+    <div class="hotspot-card hotspot-card-glossary" onclick="openModal('modal-glosario')">
+      <div class="hotspot-icon">📖</div>
+      <h3>Glosario</h3>
+      <p>Términos y conceptos SAC</p>
+    </div>
+
+    <div class="hotspot-card" onclick="openModal('modal1')">
+      <div class="hotspot-icon">📲</div>
+      <h3>1. Links Descarga</h3>
+      <p>Enlaces oficiales para clientes</p>
+    </div>
+
+    <div class="hotspot-card" onclick="openModal('modal2')">
+      <div class="hotspot-icon">🔐</div>
+      <h3>2. Validación Seguridad</h3>
+      <p>Preguntas, alto riesgo y scripts</p>
+    </div>
+
+    <div class="hotspot-card" onclick="openModal('modal3')">
+      <div class="hotspot-icon">📋</div>
+      <h3>3. Registro & KYC</h3>
+      <p>Flujo de onboarding en App</p>
+    </div>
+
+    <div class="hotspot-card" onclick="openModal('modal4')">
+      <div class="hotspot-icon">📞</div>
+      <h3>4. Canales Horarios</h3>
+      <p>SAC general y Backup Nocturno</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SIMULADOR DE FLUJO APP ANDCO -->
+<div id="modal-simulador" class="modal">
+  <div class="modal-content modal-content-large">
+    <span class="close-btn" onclick="closeModal('modal-simulador')">&times;</span>
+    <h2 style="color: #0052cc; text-align: center; margin-top: 0;">📱 Simulador Interactivo de App AndCo</h2>
+    <p style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 20px;">
+      Utiliza los controles para avanzar paso a paso por las pantallas que verá el cliente durante su proceso.
+    </p>
+
+    <div class="andco-simulator-wrapper">
+      <!-- MOCKUP TELÉFONO -->
+      <div class="phone-frame">
+        <div class="phone-notch">
+          <div class="camera-lens"></div>
+          <div class="speaker-grill"></div>
+        </div>
+        <div class="phone-screen">
+          <img id="sim-screen-img" src="" alt="Pantalla Simulador AndCo">
+        </div>
+        <div class="phone-home-indicator"></div>
+      </div>
+
+      <!-- PANEL DE CONTROL -->
+      <div class="simulator-controls">
+        <div class="sim-header">
+          <span class="sim-title">Paso Actual</span>
+          <span id="sim-step-badge" class="sim-badge">Paso 1 de 18</span>
+        </div>
+
+        <div class="sim-description">
+          <strong id="sim-step-title">Bienvenida</strong>
+          <p id="sim-step-desc">Pantalla inicial de acceso y registro en la app.</p>
+        </div>
+
+        <div class="sim-dropdown-container">
+          <label for="sim-select-step">Ir directamente a:</label>
+          <select id="sim-select-step" onchange="jumpToStep(this.value)"></select>
+        </div>
+
+        <div class="sim-btn-group">
+          <button id="sim-prev-btn" onclick="prevStep()" class="sim-btn secondary">← Anterior</button>
+          <button id="sim-next-btn" onclick="nextStep()" class="sim-btn primary">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ANDCO (INFORMACIÓN Y VIAJE DEL USUARIO) -->
+<div id="modal-andco" class="modal">
+  <div class="modal-content modal-content-large">
+    <span class="close-btn" onclick="closeModal('modal-andco')">&times;</span>
+    
+    <div class="andco-header">
+      <h2>AndCo.</h2>
+      <p class="sub">Una marca Haulmer</p>
+      <p style="margin: 0; font-size: 1em;">Cuenta Prepago 100% Digital diseñada para negocios</p>
+    </div>
+
+    <div class="tab-container" style="border-bottom-color: #1a2332;">
+      <button class="tab-btn active" style="color: #1a2332;" onclick="switchTabAndCo('tab-andco-queis')">💡 ¿Qué es AndCo.?</button>
+      <button class="tab-btn" style="color: #1a2332;" onclick="switchTabAndCo('tab-andco-viaje')">MAPA Viaje del Usuario & KYC</button>
+      <button class="tab-btn" style="color: #1a2332;" onclick="switchTabAndCo('tab-andco-home')">🏠 Home App</button>
+      <button class="tab-btn" style="color: #1a2332;" onclick="switchTabAndCo('tab-andco-beta')">⭐ Funciones Beta & Abonos</button>
+      <button class="tab-btn" style="color: #1a2332;" onclick="switchTabAndCo('tab-andco-saldo-rentable')">📈 Saldo Rentable</button>
+      <button class="tab-btn" style="color: #1a2332;" onclick="switchTabAndCo('tab-andco-abono-instante')">⚡ Abono al instante</button>
+    </div>
+
+    <!-- PESTAÑA 1 -->
+    <div id="tab-andco-queis" class="tab-content active">
+      <p><strong>AndCo.</strong> (una marca <strong>Haulmer</strong>) es una <strong>cuenta prepago 100% digital</strong> diseñada especialmente para negocios. Permite recibir y mover dinero de manera simple, con una apertura rápida y completamente segura directamente desde el dispositivo móvil.</p>
+      <div class="milestone-box">
+        📅 <strong>Hitos Importantes de Lanzamiento:</strong>
+        <ul style="list-style: none; padding: 0; margin: 8px 0 0 0;">
+          <li>🚀 <strong>11 de Septiembre:</strong> Cambio en ONB para registro de persona natural con giro.</li>
+          <li>🏢 <strong>01 de Octubre:</strong> Lanzamiento oficial para persona jurídica y natural con giro.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2 -->
+    <div id="tab-andco-viaje" class="tab-content">
+      <h3>MAPA El Viaje del Usuario en la App</h3>
+      <div class="timeline-container">
+        <div class="timeline-step"><div class="timeline-badge">1</div><div><strong>Descargar App</strong></div></div>
+        <div class="timeline-step"><div class="timeline-badge">2</div><div><strong>Registro Tipo Persona</strong></div></div>
+        <div class="timeline-step"><div class="timeline-badge">3</div><div><strong>KYC & Validaciones</strong></div></div>
+        <div class="timeline-step"><div class="timeline-badge">4</div><div><strong>Creación AndPass</strong></div></div>
+        <div class="timeline-step"><div class="timeline-badge">5</div><div><strong>Home App & Operaciones</strong></div></div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 3 -->
+    <div id="tab-andco-home" class="tab-content">
+      <h3>🏠 Mapeo de la Vista Principal (Home App)</h3>
+      <div class="feature-grid">
+        <div class="feature-card"><h4>📊 Resumen de Cuenta & Saldo</h4>Vista clara del saldo disponible en tiempo real para operar.</div>
+        <div class="feature-card"><h4>📋 Últimos Movimientos</h4>Listado de abonos recibidos y transferencias realizadas.</div>
+        <div class="feature-card"><h4>🧭 Navegación entre Accesos</h4>Atajos rápidos a transferencias, datos bancarios y cobros.</div>
+        <div class="feature-card"><h4>⚙️ Organización & Cierre de Sesión</h4>Ajustes del perfil, seguridad, desvinculación y cierre seguro.</div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 4 -->
+    <div id="tab-andco-beta" class="tab-content">
+      <h3>⭐ Funciones Disponibles (Fase Beta & Friends & Family)</h3>
+      <ol style="line-height: 1.6;">
+        <li><strong>Sin costo de mantención:</strong> Cuenta prepago accesible sin cargos mensuales fijos.</li>
+        <li><strong>Abonos al instante con TUU:</strong> Ventas liquidadas y dinero disponible las 24 horas del día.</li>
+        <li><strong>Transferencias a otros bancos:</strong> Envío y recepción de transferencias en tiempo real.</li>
+        <li><strong>Rentabilidad constante:</strong> Hasta un 4.5% de rentabilidad anual y hasta 0,36% promedio mensual.</li>
+      </ol>
+    </div>
+
+    <!-- PESTAÑA: SALDO RENTABLE -->
+    <div id="tab-andco-saldo-rentable" class="tab-content">
+      <h3>📈 Saldo Rentable</h3>
+      <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 15px; border-radius: 6px; color: #15803d; margin-top: 15px;">
+        <h4 style="margin: 0 0 8px 0; font-size: 1.1em;">Obtén hasta un 4,5% de ganancia anual sobre el saldo disponible en tu cuenta AndCo.</h4>
+        <p style="margin: 0; font-size: 0.95em; line-height: 1.5; color: #166534;">
+          Sin montos mínimos ni riesgos, cada peso que mantienes como saldo suma beneficios diarios mientras decides cómo invertirlo en tu negocio.
+        </p>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 5: ABONO AL INSTANTE CON MENÚ DESPLEGABLE DE INFORMACIÓN -->
+    <div id="tab-andco-abono-instante" class="tab-content">
+      <h3>⚡ Abono al instante</h3>
+      <p style="background: #e0f2fe; border-left: 4px solid #0284c7; padding: 12px; border-radius: 4px; color: #0369a1; font-weight: bold; line-height: 1.5;">
+        Durante el lanzamiento, el abono al instante estará disponible únicamente para un grupo reducido de comercios invitados por TUU y AndCo.
+      </p>
+      
+      <h4 style="color: #0052cc; margin-top: 20px;">Requisitos y Condiciones:</h4>
+      <ol style="line-height: 1.8; font-size: 0.95em;">
+        <li><strong>Cuenta AndCo activa:</strong> el comercio debe tener una cuenta AndCo habilitada como cuenta de abono.</li>
+        <li><strong>Plazo de abono a 1 día:</strong> se utiliza la comisión correspondiente al plazo de 1 día, mixta o porcentual.</li>
+        <li><strong>Sin deuda activa en TUU:</strong> disponible para ambas modalidades, ejemplo: sin adelanto activo.</li>
+        <li><strong>Comercios seleccionados:</strong> debe formar parte del grupo de comercios definidos para la beta family.</li>
+      </ol>
+
+      <!-- BOTÓN CON MENÚ DESPLEGABLE INTERACTIVO -->
+      <button class="abono-accordion-btn" onclick="toggleAbonoDropdown(this)">
+        <span>ℹ️ Todo lo que debes saber sobre abono al instante</span>
+        <span class="arrow-icon">▼</span>
+      </button>
+      
+      <div class="abono-accordion-content" id="abonoDropdownContent">
+        <div class="andco-grid">
+          <div class="andco-card">
+            <div class="icon">⏱️</div>
+            <h3>Recibe tus ventas en minutos</h3>
+            <p>Las ventas con tarjeta se depositan automáticamente en tu cuenta AndCo.</p>
+          </div>
+
+          <div class="andco-card">
+            <div class="icon">🏪</div>
+            <h3>Exclusivo para comercios seleccionados</h3>
+            <p>Durante el Lanzamiento 1, la funcionalidad estará disponible solo para un grupo Beta invitado por TUU y AndCo.</p>
+          </div>
+
+          <div class="andco-card">
+            <div class="icon">📅</div>
+            <h3>Se aplica la comisión de 1 día</h3>
+            <p>No existe una tarifa nueva; se utiliza la comisión correspondiente al plazo de abono de 1 día.</p>
+          </div>
+
+          <div class="andco-card">
+            <div class="icon">✉️</div>
+            <h3>Un solo correo diario</h3>
+            <p>Recibes un resumen consolidado con todos los abonos realizados durante el día anterior.</p>
+          </div>
+
+          <div class="andco-card">
+            <div class="icon">📊</div>
+            <h3>Visualización en Espacio de Trabajo</h3>
+            <p>Los abonos se muestran en un cuadro consolidado diario y las transacciones actualizan su estado en minutos.</p>
+          </div>
+
+          <div class="andco-card">
+            <div class="icon">💵</div>
+            <h3>Si un abono falla, no se pierde</h3>
+            <p>La venta será abonada posteriormente mediante el flujo estándar al día siguiente hábil.</p>
+          </div>
+
+          <div class="andco-card">
+            <div class="icon">⏸️</div>
+            <h3>Suspensión temporal por deuda</h3>
+            <p>Si registras una deuda con TUU, la funcionalidad se suspende hasta regularizar el monto pendiente.</p>
+          </div>
+
+          <div class="andco-card">
+            <div class="icon">❌</div>
+            <h3>Salida definitiva del programa</h3>
+            <p>Si cambias tu plazo de abono o dejas de utilizar AndCo, Abono al Instante se desactiva de forma definitiva.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: GLOSARIO DE TÉRMINOS Y CONCEPTOS -->
+<div id="modal-glosario" class="modal">
+  <div class="modal-content modal-content-large">
+    <span class="close-btn" onclick="closeModal('modal-glosario')">&times;</span>
+    <h2 style="color: #e65100; text-align: center; margin-top: 0;">📖 Glosario de Términos y Conceptos SAC</h2>
+    <p style="text-align: center; color: #666; font-size: 0.9em;">Definiciones técnicas, flujos de autenticación, restricciones y características de la cuenta.</p>
+
+    <div class="tab-container" style="border-bottom-color: #e65100;">
+      <button class="tab-btn active" style="color: #e65100;" onclick="switchTabGlossary('tab-glo-terminos')">🔑 Términos Clave</button>
+      <button class="tab-btn" style="color: #e65100;" onclick="switchTabGlossary('tab-glo-logins')">🔐 Tipos de Login & Sesiones</button>
+      <button class="tab-btn" style="color: #e65100;" onclick="switchTabGlossary('tab-glo-creacion')">📝 Resumen Creación de Cuenta</button>
+      <button class="tab-btn" style="color: #e65100;" onclick="switchTabGlossary('tab-glo-cuenta')">⚙️ Reglas y Producto</button>
+    </div>
+
+    <!-- PESTAÑA 1: TÉRMINOS CLAVE -->
+    <div id="tab-glo-terminos" class="tab-content active">
+      <div class="glossary-card">
+        <div class="glossary-title">🔑 OTP (One Time Password)</div>
+        <div class="glossary-desc">
+          Sirve para validar acceso y confirmar la existencia del número de teléfono y correo electrónico. Es una capa de seguridad para validar que el usuario tenga acceso a los datos entregados.
+          <ul>
+            <li><strong>Concepto:</strong> Código de un solo uso para autenticar una acción.</li>
+            <li><strong>Duración:</strong> 10 minutos.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="glossary-card">
+        <div class="glossary-title">🪪 KYC (Know Your Customer)</div>
+        <div class="glossary-desc">
+          Proceso de identificación y verificación de identidad del cliente.
+          <ul>
+            <li>Deberá fotografiar una imagen de su Cédula de Identidad (CI).</li>
+            <li>Verificación facial (prueba de vida).</li>
+            <li><strong>Validación de Fotografía CI:</strong> Se verifica la vigencia del CI, que la información sea clara, que el CI sea real y no una imagen, y que el RUT sea el mismo del primer paso.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="glossary-card">
+        <div class="glossary-title">🔢 AndPass</div>
+        <div class="glossary-desc">
+          PIN de autorización de 6 dígitos (no pueden ser números consecutivos). Permite:
+          <ul>
+            <li>Iniciar sesión en la App.</li>
+            <li>Autorizar nuevos usuarios.</li>
+            <li>Autorizar transacciones.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="glossary-card">
+        <div class="glossary-title">⏱️ Timeout</div>
+        <div class="glossary-desc">
+          Corresponde a 15 minutos de inactividad, tras los cuales se cierra la sesión de forma automática.
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2: LOGINS Y SESIONES -->
+    <div id="tab-glo-logins" class="tab-content">
+      <div class="glossary-card">
+        <div class="glossary-title">🔄 Login Recurrente</div>
+        <div class="glossary-desc">
+          Inicio de sesión en un dispositivo que ya está vinculado con la cuenta.
+          <ul>
+            <li><strong>Inicio con Biometría:</strong> 3 intentos. Si no se completa, pasa automáticamente a la opción AndPass.</li>
+            <li><strong>Inicio con AndPass:</strong> 3 intentos. Si no se cumple, se desvincula la cuenta en ese dispositivo y se deberá realizar el proceso de "login dispositivo nuevo".</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="glossary-card">
+        <div class="glossary-title">📱 Login Dispositivo Nuevo</div>
+        <div class="glossary-desc">
+          Cuando se quiere iniciar sesión en un dispositivo que no se ha iniciado sesión anteriormente. Paso a paso:
+          <ol style="margin: 5px 0 0 0; padding-left: 20px;">
+            <li>Ingresar correo electrónico.</li>
+            <li>Validación OTP: se puede escoger correo o SMS (uno u otro).</li>
+            <li>Validar identidad: imagen de CI y validación facial.</li>
+            <li>Crear un nuevo AndPass (puede usar el anterior o crear uno nuevo).</li>
+            <li>Crear biometría (opcional).</li>
+            <li>Llega al Home.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="glossary-card">
+        <div class="glossary-title">🔐 Consideraciones de Sesión y Claves</div>
+        <div class="glossary-desc">
+          <ul>
+            <li><strong>Olvido o Cambio de AndPass:</strong> Si olvidó el AndPass o quiere cambiarlo estando dentro de la App, debe realizar el proceso "Login dispositivo nuevo".</li>
+            <li><strong>Cerrar Sesión:</strong> Se desvincula la cuenta del dispositivo. Por lo tanto, se debe hacer todo el proceso de verificación de identidad.</li>
+            <li><strong>Restricción de Dispositivos:</strong> Solo 1 sesión activa en 1 dispositivo a la vez.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 3: RESUMEN CREACIÓN DE CUENTA -->
+    <div id="tab-glo-creacion" class="tab-content">
+      <div class="glossary-card">
+        <div class="glossary-title">👉 Resumen Creación de Cuenta Inicial</div>
+        <div class="glossary-desc" style="font-size: 0.88em; line-height: 1.6;">
+          Descargar App ➡️ Crear cuenta ➡️ Persona natural con giro ➡️ Continuar ➡️ Ingresar datos personales ➡️ Aceptar todas las políticas y condiciones ➡️ Continuar ➡️ Validación OTP (SMS) ➡️ Verificar ➡️ Validación OTP (Código al correo) ➡️ Verificar ➡️ Seleccionar giro comercial (solo 1) ➡️ Continuar ➡️ Verificación KYC ➡️ Tomar foto ➡️ Fotografiar CI ➡️ Validar fotografía ➡️ Verificación facial ➡️ Crear AndPass ➡️ Se crea la cuenta ➡️ Activar biometría ➡️ Solicita tarjeta física (por ahora no disponible) ➡️ Más tarde ➡️ Entrará a la App en vista Home.
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 4: REGLAS Y PRODUCTO -->
+    <div id="tab-glo-cuenta" class="tab-content">
+      <div class="glossary-card">
+        <div class="glossary-title">💳 Tipo de Cuenta y Operatividad</div>
+        <div class="glossary-desc">
+          <ul>
+            <li><strong>Tipo de Cuenta:</strong> Cuenta vista prepago.</li>
+            <li><strong>Comisiones:</strong> Sin costos de mantención.</li>
+            <li><strong>Montos:</strong> Sin límite mínimo y máximo de transferencias.</li>
+            <li><strong>Destinatarios:</strong> Un destinatario nuevo se guarda sólo si se realiza una transferencia exitosa.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="glossary-card">
+        <div class="glossary-title">🚫 Bloqueos de Acceso</div>
+        <div class="glossary-desc">
+          <ul>
+            <li><strong>Bloquear el acceso:</strong> Es temporal; el cliente podrá recibir fondos pero no podrá usar la App.</li>
+            <li><strong>Notificaciones:</strong> Bloquear / desbloquear: por ahora no se recibe notificación al respecto.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL RECUADRO DE ENLACES GENERALES -->
+<div id="modal-enlaces" class="modal">
+  <div class="modal-content modal-content-large">
+    <span class="close-btn" onclick="closeModal('modal-enlaces')">&times;</span>
+    <h2 style="color: #00838f; text-align: center; margin-top: 0;">🔗 Directorio de Enlaces y Recursos AndCo</h2>
+    <p style="text-align: center; color: #666; font-size: 0.9em;">Selecciona la categoría para consultar o acceder a cada herramienta.</p>
+
+    <div class="tab-container" style="border-bottom-color: #00838f;">
+      <button class="tab-btn active" style="color: #00838f;" onclick="switchTabLinks('tab-link-herramientas')">🛠️ Herramientas & Sistemas</button>
+      <button class="tab-btn" style="color: #00838f;" onclick="switchTabLinks('tab-link-beta')">🧪 Gestión Beta & F&F</button>
+      <button class="tab-btn" style="color: #00838f;" onclick="switchTabLinks('tab-link-notion')">📚 Notion & Guías App</button>
+    </div>
+
+    <div id="tab-link-herramientas" class="tab-content active">
+      <table class="links-table">
+        <thead>
+          <tr>
+            <th>Detalle / Recurso</th>
+            <th>Acceso / Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Back Office para AndCo.</td>
+            <td><a href="https://bank-frontend-backoffice.prod.haulmer-bank.com/" target="_blank">Abrir Back Office 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Tipificados</td>
+            <td><a href="https://docs.google.com/spreadsheets/d/1betNXRqH9BlCkEaVXWpna9obHwjSe_d6YcEpIktW7Po/edit?usp=drive_web&ouid=103556539705629949690" target="_blank">Tipificados AndCo. 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Predeterminados</td>
+            <td><a href="https://docs.google.com/document/d/1DnFnyh6pfjzJebvxiZKw4ibMPKn6CJpVuOnWkNHM_e4/edit?tab=t.0" target="_blank">Predeterminados AndCo. 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Canal para reportar errores y solicitudes que no gestiona SAC</td>
+            <td><a href="https://chat.google.com/room/AAQA0ML0sCk?cls=7" target="_blank">CX | SAC &lt;&gt; 🏙️ AndCo. 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Correos para envío post bloqueo en horario de emergencias bancarias</td>
+            <td><a href="https://docs.google.com/document/d/1Rnu-xMj55cGlK3Fvxt0DCx3GYW6Cv1imYZudexTncK4/edit?tab=t.381z98klig2m" target="_blank">SAC - Flujo de bloqueos 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Sitio web oficial</td>
+            <td><a href="https://andco.com" target="_blank">andco.com 🔗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="tab-link-beta" class="tab-content">
+      <table class="links-table">
+        <thead>
+          <tr>
+            <th>Detalle / Recurso</th>
+            <th>Acceso / Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Listado comercios BETA</td>
+            <td><a href="https://docs.google.com/spreadsheets/d/1YP33M5kZwi5Nm8GfPlpkxK3rU6ivtGFMAb4JaGq1jGw/edit?gid=0#gid=0" target="_blank">DB Beta F&F AndCo. RUT 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Registros de feedback para el equipo de AndCo.</td>
+            <td><a href="https://app.notion.com/p/haulmer/Apoyo-AndCo-Fase-Beta-3b47ccd6b6248027a614f90f9dd2be91" target="_blank">Apoyo AndCo Fase Beta 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Registro de comercios interesados en participar en el Beta</td>
+            <td><a href="https://docs.google.com/spreadsheets/d/1l0L2RlMbzpp4Y78MK4lcsircs_e2GtDYV7x3crpa9jM/edit?gid=0#gid=0" target="_blank">Referidos Beta F&F AndCo. 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Términos y Condiciones</td>
+            <td><a href="https://drive.google.com/file/d/1lZjW38l9zzx7OyeYoSP982cKg9XSdYPN/view" target="_blank">T&C Programa F&F Beta AndCo. 🔗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="tab-link-notion" class="tab-content">
+      <table class="links-table">
+        <thead>
+          <tr>
+            <th>Detalle / Recurso</th>
+            <th>Acceso / Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Instalación App - Friends & Family</td>
+            <td><a href="https://app.notion.com/p/haulmer/Instalaci-n-App-Friends-Family-3927ccd6b6248037a7f8d6d29ab94534#20ae661c1c174e66aa9414ea3d42c912" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Onboarding – Persona Natural con Giro</td>
+            <td><a href="https://app.notion.com/p/haulmer/Onboarding-Persona-Natural-con-Giro-3067ccd6b624807e928df80970142cf3" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Login - Recurrente</td>
+            <td><a href="https://app.notion.com/p/haulmer/Login-Recurrente-3067ccd6b62480539770cbf675b81556" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Login - Vinculación de un nuevo dispositivo</td>
+            <td><a href="https://app.notion.com/p/haulmer/Login-Vinculaci-n-de-un-nuevo-dispositivo-3197ccd6b6248081b477ffeee294e15c" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>AndPass (PIN de 6 dígitos)</td>
+            <td><a href="https://app.notion.com/p/haulmer/AndPass-Pin-6-d-gitos-3197ccd6b62480f9a195d3a20b4f8078" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>App: Home</td>
+            <td><a href="https://app.notion.com/p/haulmer/Home-31f7ccd6b6248016a501fb797e373932" target="_blank">Ver Home 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Transferencias</td>
+            <td><a href="https://app.notion.com/p/haulmer/Transferencias-31f7ccd6b62480b499c6cb032827a2bc" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Abono al instante</td>
+            <td><a href="https://docs.google.com/presentation/d/1-dEbSg6XSTQBGAU3S42FS4dIY_TyVeUgDu9kI2Sr8LY/edit?slide=id.g3e1474bbbc9_0_2070#slide=id.g3e1474bbbc9_0_2070" target="_blank">Ver Abono al Instante 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Manual de usuario general</td>
+            <td><a href="https://app.notion.com/p/haulmer/Manuales-de-Usuario-3057ccd6b624802d9272ef44fe04b993" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Atención a clientes BackOffice</td>
+            <td><a href="https://app.notion.com/p/haulmer/4-Atenci-n-cliente-36b7ccd6b62481ff95e1da93440df6ee" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Validación de seguridad</td>
+            <td><a href="https://app.notion.com/p/haulmer/Protocolo-de-Validaci-n-de-Seguridad-AndCo-SAC-3957ccd6b624803f81a4eac18ae8d4ac" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+          <tr>
+            <td>Notion motor de Fraude y riesgo para transferencias</td>
+            <td><a href="https://app.notion.com/p/haulmer/Motor-de-Fraude-y-Riesgo-Gu-a-para-Agentes-SAC-3aa7ccd6b62480b48898f4930dca2f9b" target="_blank">Ver en Notion 🔗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL FLUJO DE ATENCIÓN SAC -->
+<div id="modal-flujo" class="modal">
+  <div class="modal-content modal-content-large">
+    <span class="close-btn" onclick="closeModal('modal-flujo')">&times;</span>
+    
+    <div class="flow-diagram">
+      <h2 class="flow-header-title">Flujo de Atención SAC | AndCo.</h2>
+      <div class="flow-header-sub">Proceso de Gestión de Consultas y Solicitudes</div>
+
+      <!-- PASO 1 -->
+      <div class="flow-box-blue">
+        <div class="flow-box-title">
+          <span class="num">1</span> Cliente contacta SAC
+        </div>
+        <div class="flow-box-content">
+          <div style="text-align: center; font-size: 0.78em; color: #555; margin-bottom: 6px; font-weight: bold;">Puede ser a través de:</div>
+          <div class="channels-grid">
+            <div class="channel-item">📞<span>Teléfono</span></div>
+            <div class="channel-item">💬<span>Chat</span></div>
+            <div class="channel-item">📄<span>Ticket</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow-down">↓</div>
+
+      <!-- PASO 2 Y DERECHA -->
+      <div class="flow-box-blue">
+        <div class="flow-box-title">
+          <span class="num">2</span> Validación de Seguridad
+        </div>
+        <div class="flow-box-content">
+          <div class="val-grid">
+            <div class="val-col">
+              <h5>Consultas Generales</h5>
+              <div>👥</div>
+              <p>2 preguntas</p>
+            </div>
+            <div class="val-col">
+              <h5>Consultas Sensibles o<br>de información del producto</h5>
+              <div>🛡️</div>
+              <p>4 preguntas</p>
+            </div>
+            <div class="val-col">
+              <h5>Gestiones o Modificaciones</h5>
+              <div>📝</div>
+              <p>4 preguntas<br>+ Correo de confirmación</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DECISIÓN Y SECCIÓN PRINCIPAL EN 2 COLUMNAS -->
+      <div class="rhombus-container">
+        <div class="rhombus">
+          🔒 <span>3. ¿Validación exitosa?</span>
+        </div>
+      </div>
+
+      <div class="split-val">
+        <!-- COLUMNA IZQUIERDA: SÍ -->
+        <div>
+          <div style="color: #2e7d32; font-weight: bold; margin-bottom: 4px;">Sí ↙</div>
+
+          <!-- PASO 5 -->
+          <div class="step-green-card">
+            🔍 <span>5. Identificar consulta o gestión del cliente</span>
+          </div>
+
+          <div class="flow-arrow-down">↓</div>
+
+          <!-- PASO 6 -->
+          <div class="rhombus-n1">
+            👤 <span>6. ¿Puede resolverse por N1?</span>
+          </div>
+
+          <!-- BIFURCACIÓN DE N1 -->
+          <div class="n1-branches">
+            <!-- IZQUIERDA: SÍ N1 -->
+            <div>
+              <div style="color: #2e7d32; font-weight: bold; font-size: 0.8em; margin-bottom: 2px;">Sí ↙</div>
+              <div class="n1-card n1-card-left">
+                <div class="n1-title n1-title-left">🖥️ 7. Resuelto por N1</div>
+                • Apoyarse en BackOffice y Guía de Ayuda<br>
+                • Entregar información o resolver solicitud
+              </div>
+
+              <div class="step-purple">
+                🟣 8. Tipificar según corresponda<br>
+                <span style="font-weight: normal; font-size: 0.9em;">• Usar Planilla de Tipificados</span>
+              </div>
+
+              <div class="step-grey">
+                💬 9. Enviar predeterminado si es necesario
+              </div>
+
+              <div class="badge-outcome badge-resolved">
+                ✅ CASO RESUELTO
+              </div>
+            </div>
+
+            <!-- DERECHA: NO N1 -->
+            <div>
+              <div style="color: #e65100; font-weight: bold; font-size: 0.8em; margin-bottom: 2px;">No ↘</div>
+              <div class="n1-card n1-card-right">
+                <div class="n1-title n1-title-right">⬆️ 7. No resuelto por N1</div>
+                Levantar gestión directamente en el Canal Oficial de AndCo
+
+                <div class="examples-box">
+                  <strong style="color: #d97706;">Ejemplos</strong><br>
+                  • Solicitudes de bloqueo<br>
+                  • Datos no disponibles en BackOffice<br>
+                  • Errores o incidencias técnicas<br>
+                  • Otros que no puedan resolverse en N1
+                </div>
+              </div>
+
+              <div class="step-purple">
+                🟣 8. Tipificar según corresponda<br>
+                <span style="font-weight: normal; font-size: 0.9em;">• Usar Planilla de Tipificados</span>
+              </div>
+
+              <div class="step-grey">
+                💬 9. Enviar predeterminado si es necesario
+              </div>
+
+              <div class="badge-outcome badge-escalated">
+                📣 GESTIÓN ENVIADA AL CANAL OFICIAL DE ANDCO
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: NO + NOTION + RECURSOS -->
+        <div class="side-right-box">
+          <div class="notion-side-box">
+            📖 <div>
+              <strong>Guiarse con el Notion</strong><br>
+              "Protocolo de Validación de Seguridad - AndCo"
+            </div>
+          </div>
+
+          <div>
+            <div style="color: #d9534f; font-weight: bold; margin-bottom: 4px; text-align: right;">↘ No</div>
+            
+            <div class="failed-card">
+              <div class="failed-card-header">
+                ❌ 4. Validación fallida
+              </div>
+              • No avanzar con la atención<br>
+              • <strong>Tipificar caso:</strong><br>
+              <span style="color: #d9534f; font-weight: bold; margin-left: 10px; display: inline-block;">Contacto no válido - Proceso de validación fallido</span><br>
+              • Entregar speech de atención
+            </div>
+
+            <div class="end-badge">
+              🏁 Caso Finalizado
+            </div>
+          </div>
+
+          <!-- RECURSOS DE APOYO -->
+          <div class="support-resources">
+            <h4>RECURSOS DE APOYO</h4>
+
+            <div class="support-item">
+              🛡️
+              <div>
+                <strong>Validación de Seguridad</strong><br>
+                Notion: Protocolo de Validación de Seguridad - AndCo
+              </div>
+            </div>
+
+            <div class="support-item">
+              🖥️
+              <div>
+                <strong>Resolución N1</strong><br>
+                BackOffice AndCo / Guía de Ayuda
+              </div>
+            </div>
+
+            <div class="support-item">
+              🏷️
+              <div>
+                <strong>Tipificación y Predeterminados</strong><br>
+                Planilla de Tipificados y Predeterminados SAC
+              </div>
+            </div>
+
+            <div class="support-item">
+              ⬆️
+              <div>
+                <strong>Gestiones Escaladas</strong><br>
+                Canal Oficial de AndCo
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER DEL FLUJO -->
+      <div class="flow-footer-info">
+        <div>
+          ℹ️ <strong>Recuerda:</strong> Tipificar correctamente todos los casos y utilizar los predeterminados definidos. Esto asegura una atención consistente y trazable.
+        </div>
+        <div style="font-weight: bold; white-space: nowrap;">
+          📄 Versión 1.0 | Julio 2025
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BACKOFFICE -->
+<div id="modal-backoffice" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('modal-backoffice')">&times;</span>
+    <h2 style="color: #6a1b9a;">🖥️ Consultas y Gestión en BackOffice</h2>
+    <p>el backoffice de Andco es un nuevo panel , con herramientas para poder visualizar</p>
+    
+    <div class="banner-req">
+      ⚠️ REQUISITO OBLIGATORIO DE ACCESO:<br>
+      Para consultar información administrativa y visualizar datos de la cuenta banco del cliente en BackOffice, los agentes deben estar conectado a la vpn.
+    </div>
+
+    <h3>🔍 Gestiones Disponibles en N1 mediante BackOffice:</h3>
+    <ul>
+      <li>Consulta de datos generales del cliente, empresa y negocio.</li>
+      <li>Verificación de estados de cuenta, abonos al instante y saldo.</li>
+      <li>Revisión de comprobantes y detalle de operaciones/transferencias.</li>
+      <li>Verificación de validaciones previas del usuario y estado KYC.</li>
+      <li>Acceso a manuales operativos: <a href="https://app.notion.com/p/haulmer/4-Atenci-n-cliente-36b7ccd6b62481ff95e1da93440df6ee" target="_blank">Atención a clientes BackOffice en Notion 🔗</a>.</li>
+    </ul>
+
+    <h3>🚨 Casos que requieren escalamiento (Fuera de alcance N1):</h3>
+    <ul>
+      <li>Información no visible o inconsistente en el sistema BackOffice.</li>
+      <li>Solicitudes de bloqueo definitivo o desvinculación de dispositivos por robo o extravío.</li>
+      <li>Errores e incidencias técnicas del sistema que requieran intervención mediante el canal de comunicación: <a href="https://chat.google.com/room/AAQA0ML0sCk?cls=7" target="_blank">CX | SAC &lt;&gt; 🏙️ AndCo. 🔗</a>.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- MODAL 1: LINKS DESCARGA -->
+<div id="modal1" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('modal1')">&times;</span>
+    <h2>📲 Links Exclusivos para Clientes</h2>
+    <p><span class="tag-do">QUÉ SÍ HACER:</span> Compartir únicamente los links oficiales de descarga y portal web con el usuario final:</p>
+    <ul>
+      <li><strong>iOS (App Store):</strong> <code>https://apps.apple.com/cl/app/andco/id6739098770</code></li>
+      <li><strong>Android (Play Store):</strong> <code>https://play.google.com/store/apps/details?id=com.haulmer.bank</code></li>
+      <li><strong>Portal Web Oficial:</strong> <code>https://andco.com</code></li>
+      <li><strong>Guía de Instalación (Friends & Family):</strong> <a href="https://app.notion.com/p/haulmer/Instalaci-n-App-Friends-Family-3927ccd6b6248037a7f8d6d29ab94534#20ae661c1c174e66aa9414ea3d42c912" target="_blank">Ver guía en Notion 🔗</a></li>
+    </ul>
+    <p><span class="tag-dont">QUÉ NO HACER:</span> ❌ NUNCA compartir links o accesos internos del BackOffice con los usuarios.</p>
+  </div>
+</div>
+
+<!-- MODAL 2: VALIDACIÓN DE SEGURIDAD -->
+<div id="modal2" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('modal2')">&times;</span>
+    <h2>🔐 Validación de Seguridad y Protocolos</h2>
+    <p style="font-size: 0.85em; color: #555;">
+      🔗 Documento completo: <a href="https://app.notion.com/p/haulmer/Protocolo-de-Validaci-n-de-Seguridad-AndCo-SAC-3957ccd6b624803f81a4eac18ae8d4ac" target="_blank">Protocolo de actuación en Notion</a>
+    </p>
+
+    <!-- INFORMACIÓN ANDCO AGREGADA DEBAJO DEL LINK -->
+    <div class="andco-validation-notice">
+      Para clientes <strong>AndCo</strong> siempre se aplicará validación de seguridad. El tipo de validación dependerá de la solicitud, consulta o requerimiento ingresado por el cliente, clasificándose dentro de los siguientes niveles:
+      <ul>
+        <li>Validación de consultas generales</li>
+        <li>Validación de consulta sensible / información del producto</li>
+        <li>Validación de gestiones o modificaciones</li>
+      </ul>
+    </div>
+
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="switchTab('tab-base')">Speeches Canal</button>
+      <button class="tab-btn" onclick="switchTab('tab-gen')">Consultas Generales (2)</button>
+      <button class="tab-btn" onclick="switchTab('tab-sens')">Consultas Sensibles (4)</button>
+      <button class="tab-btn" onclick="switchTab('tab-alto-riesgo')">🚨 Gestiones Alto Riesgo & Correo</button>
+      <button class="tab-btn" onclick="switchTab('tab-res')">Resultado & Scripts</button>
+    </div>
+
+    <div id="tab-base" class="tab-content active">
+      <h3>📞 Canal Telefónico</h3>
+      <div class="code-box">
+        "¡Hola, muy buen día! Te habla [tu nombre], ejecutivo/a de atención al cliente de AndCo. ¿Con quién tengo el gusto de hablar?... Entiendo. Te comento que si esta llamada se corta, te contactaré de inmediato.<br><br>
+        Antes de continuar, y para resguardar la seguridad de tu cuenta, necesito realizar una breve validación de identidad y podremos avanzar con tu solicitud."
+      </div>
+      <h3>💬 Canal WhatsApp</h3>
+      <div class="code-box">
+        "Para proteger la seguridad de tu cuenta, necesitamos validar tu identidad antes de continuar con tu solicitud. 😊 Por favor, indícanos la siguiente información:<br>
+        ✅ RUT del comercio<br>
+        ✅ ¿Cuál es el correo electrónico registrado en su cuenta AndCo?"
+      </div>
+      <h3>🎫 Canal Ticket</h3>
+      <div class="code-box">
+        "¡Hola, [Nombre del cliente]! 👋 Gracias por comunicarte con el equipo de atención de AndCo. Mi nombre es [Nombre del Ejecutivo]... Por favor, responde este ticket indicando:<br>
+        • RUT del comercio.<br>
+        • Correo electrónico registrado en tu cuenta AndCo."
+      </div>
+    </div>
+
+    <div id="tab-gen" class="tab-content">
+      <h3>🟢 Validación para Consultas Generales</h3>
+      <p><i>Aplica para consultas públicas, ayuda de navegación o problemas técnicos básicos.</i></p>
+      <p><strong>Requisito:</strong> Realizar 2 preguntas de validación.</p>
+      <ul>
+        <li>🚨 ¿Me puedes indicar el RUT del comercio?</li>
+        <li>🚨 ¿Cuál es el correo electrónico registrado en tu cuenta AndCo?</li>
+      </ul>
+    </div>
+
+    <div id="tab-sens" class="tab-content">
+      <h3>🟡 Validación para Consultas Sensibles o Información del Producto</h3>
+      <p><i>Aplica para saldos, abonos, datos de la cuenta o consultas específicas del producto.</i></p>
+      <p><strong>Requisito:</strong> Realizar 4 preguntas de validación.</p>
+      <ul>
+        <li>🚨 ¿Me puedes indicar el RUT del comercio?</li>
+        <li>🚨 ¿Cuál es el correo electrónico registrado en tu cuenta AndCo?</li>
+        <li>🚨 ¿Cuál es el número de teléfono registrado en tu cuenta?</li>
+        <li>🚨 ¿Qué rol cumples en la compañía? <i>(Pregunta de control de fraude, no posee respuesta preconcebida)</i></li>
+      </ul>
+      <p><strong>Preguntas alternativas para variar (cuando aplique):</strong></p>
+      <ul>
+        <li>💡 ¿Cuál es el nombre de fantasía de su comercio?</li>
+        <li>💡 ¿Cuál es la razón social de su empresa?</li>
+        <li>💡 ¿Cuál es el giro comercial de su empresa?</li>
+        <li>💡 ¿Quién es el representante legal de la empresa?</li>
+      </ul>
+    </div>
+
+    <div id="tab-alto-riesgo" class="tab-content">
+      <h3>🔴 Validación para Gestiones o Modificaciones de Alto Riesgo</h3>
+      <p>Aplica para gestiones que involucren modificaciones de datos, autorizaciones o cualquier gestión que pueda representar un riesgo para la cuenta del cliente.</p>
+      <div class="dark-card">
+        <strong>Ejemplos de gestiones de alto riesgo:</strong>
+        <ul>
+          <li>Cambio de correo electrónico o teléfono.</li>
+          <li>Bloqueo o desbloqueo de productos o App.</li>
+          <li>Modificación de datos de la cuenta.</li>
+          <li>Requerimientos ley fraude o desvinculación de dispositivo por robo.</li>
+        </ul>
+      </div>
+      <h4>Validación Requerida</h4>
+      <ul>
+        <li>✅ Validación mediante <strong>4 preguntas de seguridad</strong>.</li>
+        <li>✅ <strong>Correo de autorización</strong> enviando la plantilla correspondiente.</li>
+      </ul>
+      <hr>
+      <h3>📧 Correo de Autorización</h3>
+      <div class="code-box">
+        <strong>¡Hola, [Nombre del cliente]! 👋</strong><br><br>
+        Gracias por comunicarte con el equipo de atención de AndCo. Mi nombre es <strong>[Nombre Ejecutivo]</strong>...<br><br>
+        Hemos recibido tu solicitud de <strong>[Detalle de la gestión]</strong>. Para continuar, necesitamos que nos confirmes por este medio que autorizas la realización del procedimiento.<br><br>
+        📌 <strong>Por favor, responde este correo con el siguiente mensaje:</strong><br>
+        <i>"Autorizo a AndCo. a realizar la gestión de [Detalle de la gestión]."</i>
+      </div>
+    </div>
+
+    <div id="tab-res" class="tab-content">
+      <h3>✅ Validación Exitosa</h3>
+      <p>Si las respuestas coinciden con el sistema: entregar información o continuar con la gestión.</p>
+      <hr>
+      <h3>❌ Validación Fallida (Pasos del Agente)</h3>
+      <ol>
+        <li>Cambiar tipificado a: <code>Contacto no válido - Proceso de validación fallido</code>.</li>
+        <li>Cambiar estado a: <code>Falta de información (ticket)</code> o <code>Resuelto (chat)</code>.</li>
+        <li>Dejar nota interna con las preguntas fallidas.</li>
+        <li><strong>NUNCA indicar cuál fue la respuesta incorrecta.</strong></li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 3: REGISTRO & KYC -->
+<div id="modal3" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('modal3')">&times;</span>
+    <h2>📋 Proceso de Registro & KYC (Onboarding en App)</h2>
+    <p style="font-size: 0.85em; color: #555;">
+      🔗 Documento completo: <a href="https://app.notion.com/p/haulmer/Onboarding-Persona-Natural-con-Giro-3067ccd6b624807e928df80970142cf3" target="_blank">Ver Onboarding en Notion 🔗</a>
+    </p>
+
+    <h3>Paso a Paso del Registro:</h3>
+    <ol>
+      <li><strong>Perfil:</strong> Seleccionar perfil <strong>Persona Natural con Giro (PNG)</strong> e ingresar datos personales.</li>
+      <li><strong>Aceptación de Políticas:</strong> Aceptar términos, condiciones y políticas de privacidad.</li>
+      <li><strong>Doble Validación OTP:</strong> 
+        <ul>
+          <li>Ingreso y validación de código OTP enviado por <strong>SMS</strong>.</li>
+          <li>Ingreso y validación de código OTP enviado por <strong>Correo Electrónico</strong>.</li>
+          <li><i>Nota:</i> Los códigos OTP tienen una validez de 10 minutos.</li>
+        </ul>
+      </li>
+      <li><strong>Giro Comercial:</strong> Seleccionar 1 giro comercial correspondiente a la actividad económica.</li>
+      <li><strong>Verificación KYC (Know Your Customer):</strong>
+        <ul>
+          <li>Fotografía de Cédula de Identidad (CI) vigente (frente y dorso).</li>
+          <li>Verificación de claridad, autenticidad del plástico y consistencia del RUT.</li>
+          <li>Verificación facial en vivo (prueba de vida).</li>
+        </ul>
+      </li>
+      <li><strong>Seguridad y Claves (AndPass):</strong>
+        <ul>
+          <li>Crear PIN <strong>AndPass de 6 dígitos</strong> (no pueden ser secuencias consecutivas).</li>
+          <li>Configuración opcional de lectura biométrica (Huella / Face ID).</li>
+        </ul>
+      </li>
+      <li><strong>Finalización:</strong> La cuenta queda aperturada y lista para operar en la vista Home.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- MODAL 4: CANALES Y HORARIOS -->
+<div id="modal4" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('modal4')">&times;</span>
+    <h2>📞 Canales y Horarios de Atención SAC</h2>
+    <p>Puntos de contacto oficiales para la atención de clientes y gestión de emergencias bancarias.</p>
+
+    <h3>☀️ Atención SAC General (Horario: 09:00 a 21:00 hrs)</h3>
+    <ul>
+      <li><strong>WhatsApp Oficial:</strong> +56 9 9098 7756</li>
+      <li><strong>Atención Telefónica:</strong> +56 2 2754 1571</li>
+      <li><strong>Correo Electrónico:</strong> servicioalcliente@haulmer.net</li>
+      <li><strong>Página Web:</strong> <a href="https://andco.com" target="_blank">andco.com 🔗</a></li>
+    </ul>
+
+    <hr>
+
+    <h3>🌙 Emergencias Bancarias & Backup Nocturno (24/7)</h3>
+    <ul>
+      <li><strong>Teléfono Exclusivo Emergencias:</strong> +56 71 246 0021</li>
+      <li><strong>Horario Backup Nocturno:</strong> De 21:00 a 09:00 hrs.</li>
+      <li><strong>Alcance:</strong> Atención exclusiva para casos críticos como robo, extravío, sospecha de fraude o bloqueo urgente de cuenta.</li>
+      <li><strong>Protocolo Post-Bloqueo:</strong> Enviar correos de respaldo conforme a la plantilla oficial: <a href="https://docs.google.com/document/d/1Rnu-xMj55cGlK3Fvxt0DCx3GYW6Cv1imYZudexTncK4/edit?tab=t.381z98klig2m" target="_blank">SAC - Flujo de bloqueos 🔗</a>.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+  
+  function switchTab(tabId) {
+    const contents = document.querySelectorAll('#modal2 .tab-content');
+    const buttons = document.querySelectorAll('#modal2 .tab-btn');
+    
+    contents.forEach(content => content.classList.remove('active'));
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function switchTabLinks(tabId) {
+    const contents = document.querySelectorAll('#modal-enlaces .tab-content');
+    const buttons = document.querySelectorAll('#modal-enlaces .tab-btn');
+    
+    contents.forEach(content => content.classList.remove('active'));
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function switchTabGlossary(tabId) {
+    const contents = document.querySelectorAll('#modal-glosario .tab-content');
+    const buttons = document.querySelectorAll('#modal-glosario .tab-btn');
+    
+    contents.forEach(content => content.classList.remove('active'));
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function switchTabAndCo(tabId) {
+    const contents = document.querySelectorAll('#modal-andco .tab-content');
+    const buttons = document.querySelectorAll('#modal-andco .tab-btn');
+    
+    contents.forEach(content => content.classList.remove('active'));
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  // Función para desplegar/contraer el menú de Abono al Instante
+  function toggleAbonoDropdown(button) {
+    button.classList.toggle('active');
+    const content = document.getElementById('abonoDropdownContent');
+    if (content.style.maxHeight) {
+      content.style.maxHeight = null;
+      content.classList.remove('open');
+    } else {
+      content.classList.add('open');
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  }
+
+  // Lógica del Simulador
+  const flowSteps = [
+    { name: "39290.jpg", title: "Bienvenida", desc: "Pantalla principal de inicio. Opción de Crear cuenta o Iniciar sesión." },
+    { name: "39291.jpg", title: "Tipo de Registro", desc: "Selección del perfil de negocio (ej. Persona natural con giro)." },
+    { name: "39292.jpg", title: "Requisitos de Registro", desc: "Informa sobre la necesidad de tener la cédula a mano y buena iluminación." },
+    { name: "39293.jpg", title: "Datos Personales", desc: "Formulario para ingresar Nombre, Apellidos, RUT, Correo y Teléfono." },
+    { name: "39294.jpg", title: "Iniciar Sesión / Login", desc: "Ingreso de correo registrado para acceder a la cuenta." },
+    { name: "39295.jpg", title: "Paso 1/3: Verificación de Correo", desc: "Envío del código OTP de seguridad al correo del cliente." },
+    { name: "39297.jpg", title: "Paso 2/3: Preparación KYC", desc: "Instrucciones de verificación biométrica y escaneo del documento." },
+    { name: "39296.jpg", title: "Paso 2/3: Captura Frente Cédula", desc: "Escaneo del frente del documento de identidad." },
+    { name: "39298.jpg", title: "Paso 2/3: Captura Reverso Cédula", desc: "Escaneo del reverso del documento de identidad." },
+    { name: "39284.jpg", title: "Paso 2/3: Verificación Facial", desc: "Captura de rostro (selfie) en el óvalo de seguridad." },
+    { name: "39299.jpg", title: "Identidad Validada", desc: "Confirmación exitosa de la validación biométrica KYC." },
+    { name: "39300.jpg", title: "Paso 3/3: Crear AndPass", desc: "Presentación para la creación del PIN de acceso y firma." },
+    { name: "39301.jpg", title: "Vinculando Cuenta", desc: "Pantalla de carga mientras se procesa la creación de la cuenta." },
+    { name: "39302.jpg", title: "¡Cuenta Vinculada!", desc: "Confirmación de bienvenida y apertura de la cuenta operativa empresarial." },
+    { name: "39287.jpg", title: "Activar Biometría", desc: "Opción para activar huella / Face ID para posteriores accesos." },
+    { name: "39288.jpg", title: "Login con AndPass", desc: "Teclado numérico para ingresar a la cuenta mediante el AndPass." },
+    { name: "39303.jpg", title: "Home / Inicio App", desc: "Pantalla principal con el saldo, cuenta vista y accesos rápidos." },
+    { name: "39304.jpg", title: "Transferencias", desc: "Módulo para realizar transferencias y administrar destinatarios." }
+  ];
+
+  let currentStepIndex = 0;
+
+  function initSimulator() {
+    const select = document.getElementById('sim-select-step');
+    if (!select) return;
+    select.innerHTML = '';
+    flowSteps.forEach((step, index) => {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = `${index + 1}. ${step.title}`;
+      select.appendChild(option);
+    });
+    renderStep();
+  }
+
+  function renderStep() {
+    const step = flowSteps[currentStepIndex];
+    const imgEl = document.getElementById('sim-screen-img');
+    if (imgEl) {
+      imgEl.style.opacity = '0.3';
+      setTimeout(() => {
+        imgEl.src = step.name;
+        imgEl.style.opacity = '1';
+      }, 150);
+    }
+    document.getElementById('sim-step-badge').textContent = `Paso ${currentStepIndex + 1} de ${flowSteps.length}`;
+    document.getElementById('sim-step-title').textContent = step.title;
+    document.getElementById('sim-step-desc').textContent = step.desc;
+    document.getElementById('sim-select-step').value = currentStepIndex;
+    document.getElementById('sim-prev-btn').disabled = currentStepIndex === 0;
+    document.getElementById('sim-next-btn').disabled = currentStepIndex === flowSteps.length - 1;
+  }
+
+  function nextStep() {
+    if (currentStepIndex < flowSteps.length - 1) {
+      currentStepIndex++;
+      renderStep();
+    }
+  }
+
+  function prevStep() {
+    if (currentStepIndex > 0) {
+      currentStepIndex--;
+      renderStep();
+    }
+  }
+
+  function jumpToStep(index) {
+    currentStepIndex = parseInt(index, 10);
+    renderStep();
+  }
+
+  document.addEventListener('DOMContentLoaded', initSimulator);
+
+  window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+      event.target.style.display = 'none';
+    }
+  }
+</script>
+
+</body>
+</html>
